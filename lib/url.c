@@ -2658,6 +2658,29 @@ CURLcode Curl_setopt(struct SessionHandle *data, CURLoption option,
   case CURLOPT_PIPEWAIT:
     data->set.pipewait = (0 != va_arg(param, long))?TRUE:FALSE;
     break;
+  case CURLOPT_STREAM_PRIORITY:
+#ifndef USE_NGHTTP2
+    return CURLE_NOT_BUILT_IN;
+#else
+    arg = va_arg(param, long);
+    if((arg>=1) && (arg <= 256))
+      data->set.stream_prio = (int)arg;
+    break;
+#endif
+  case CURLOPT_STREAM_DEPENDS:
+  case CURLOPT_STREAM_DEPENDS_E:
+  {
+#ifndef USE_NGHTTP2
+    return CURLE_NOT_BUILT_IN;
+#else
+    struct SessionHandle *dep = va_arg(param, struct SessionHandle *);
+    if(dep && GOOD_EASY_HANDLE(dep)) {
+      data->set.stream_depends_on = dep;
+      data->set.stream_depends_e = (option == CURLOPT_STREAM_DEPENDS_E);
+    }
+    break;
+#endif
+  }
   default:
     /* unknown tag and its companion, just ignore: */
     result = CURLE_UNKNOWN_OPTION;

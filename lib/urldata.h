@@ -1628,6 +1628,10 @@ struct UserDefined {
   bool pipewait;        /* wait for pipe/multiplex status before starting a
                            new connection */
   long expect_100_timeout; /* in milliseconds */
+
+  struct SessionHandle *stream_depends_on;
+  bool stream_depends_e; /* set or don't set the Exclusive bit */
+  int stream_prio;
 };
 
 struct Names {
